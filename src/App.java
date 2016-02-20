@@ -5,9 +5,9 @@ public class App {
     public static void main(String[] args) throws IOException {
         DestinyService destinyService = new ApacheDestinyService(
                 "http://www.bungie.net/Platform/Destiny",
-                "MY-API-KEY"
+                System.getenv("DESTINY_API_KEY")
         );
-        System.out.println(destinyService.getAccountSummary(2, 4611686018437660735L));
+        long membershipId = destinyService.getMembershipId(2, args[0]);
+        System.out.println(destinyService.getAccountSummary(2, membershipId));
     }
-
 }

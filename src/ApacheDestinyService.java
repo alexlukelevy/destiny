@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -19,9 +21,25 @@ public class ApacheDestinyService implements DestinyService {
         this.baseUrl = baseUrl;
         this.authHeader = new BasicHeader("X-API-Key", apiKey);
     }
+
     @Override
     public String getAccountSummary(int membershipTypeId, long membershipId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Summary";
+        return getJson(serviceUrl);
+    }
+
+    @Override
+    public long getMembershipId(int membershipTypeId, String username) throws IOException {
+        String serviceUrl = "/SearchDestinyPlayer/" + membershipTypeId + "/" + username;
+        String json = getJson(serviceUrl);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(json);
+
+        return root.at("/Response/0/membershipId").asLong();
+    }
+
+    private String getJson(String serviceUrl) throws IOException {
         HttpGet request = new HttpGet(baseUrl + serviceUrl);
         request.addHeader(authHeader);
         HttpResponse response = httpClient.execute(request);
