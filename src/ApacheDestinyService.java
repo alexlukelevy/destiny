@@ -25,7 +25,7 @@ public class ApacheDestinyService implements DestinyService {
         this.authHeader = new BasicHeader("X-API-Key", apiKey);
     }
 
-    //do we add method for get specific element, with parameter of string for find value?
+    //TODO Method with String input that returns a specific element
     @Override
     public String getAccountSummary(int membershipTypeId, long membershipId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Summary";
@@ -34,32 +34,12 @@ public class ApacheDestinyService implements DestinyService {
 
     @Override
     public String getCharacterSummary(int membershipTypeId, long membershipId) throws IOException {
-        String accountSummaryJson = getAccountSummary(membershipTypeId, membershipId);
-        List<JsonNode> allCharacters = getListOfJsonField(accountSummaryJson, "characterId");
-        long characterId;
-
-        if (allCharacters.size() == 1) {
-            characterId = allCharacters.get(0).asLong();
-        }
-        //Is it bad to wrong to cast this here?
-        else {
-            characterId = Long.parseLong(userInputSelectCharacter(allCharacters));
-       }
-
+        long characterId = getCharacterId(membershipTypeId, membershipId);
 
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId;
 
         return getJson(serviceUrl);
     }
-
-    /*public String getWeapons() {
-        return null;
-    }
-
-    @Override // need to get the node into here. Maybe copy and paste getMembershipId but change return type to node
-    public String getImportantStats(String accountSummary) {
-        return "test";
-    } */
 
     @Override
     public long getMembershipId(int membershipTypeId, String username) throws IOException {
@@ -70,6 +50,15 @@ public class ApacheDestinyService implements DestinyService {
         JsonNode root = mapper.readTree(json);
 
         return root.findValue("membershipId").asLong();
+    }
+    @Override
+    public String getCharacterInventory(int membershipTypeId, long membershipId) throws IOException {
+    ///{membershipType}/Account/{destinyMembershipId}/Character/{characterId}/Activities/
+        long characterId = getCharacterId(membershipTypeId, membershipId);
+
+        String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
+
+        return getJson(serviceUrl);
     }
 
     private String getJson(String serviceUrl) throws IOException {
@@ -91,31 +80,40 @@ public class ApacheDestinyService implements DestinyService {
         return content.toString();
     }
 
-    //Is the below repetition bad and should it be public?
-    //whats the best way to test half way through without having to make the
-    //method public or modify all the code above to call it?
-    private String getSingleJsonField(String jsonString, String field) throws IOException {
+    private String getFirstSingleJsonField(String jsonString, String field) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jsonString);
 
-        //Will only ever return the first found field
         return root.findValue(field).asText();
     }
 
-    // Returns a list of JsonNodes for the field specified, eg a list of characters or items.
-    //Note that sub-tree search ends if a field is found, so possible children of result nodes are not included.
-    private List<JsonNode> getListOfJsonField(String jsonString, String field) throws IOException {
+    /**
+     * Sub-tree search ends if a field is found, so possible children of result nodes are not returned.
+     */
+    private List<JsonNode> getListOfJsonFields(String jsonString, String field) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jsonString);
 
         return root.findValues(field);
     }
 
-    //Using string here because i know i can cast it after the user has input it, it will also allow the user to
-    //enter a non int/long etc number without throwing an error, whats the best way to handle this?
+    public long getCharacterId(int membershipTypeId, long membershipId) throws IOException {
+        String accountSummaryJson = getAccountSummary(membershipTypeId, membershipId);
+        List<JsonNode> allCharacters = getListOfJsonFields(accountSummaryJson, "characterId");
+        long characterId;
+
+        if (allCharacters.size() == 1) {
+            characterId = allCharacters.get(0).asLong();
+        } else {
+            characterId = Long.parseLong(userInputSelectCharacter(allCharacters));
+        }
+
+        return characterId;
+    }
+
     private String userInputSelectCharacter(List<JsonNode> listOfCharacters) {
         String userInput;
-        List<String> stringListOfCharacters = new ArrayList<String>();
+        List<String> stringListOfCharacters = new ArrayList<>();
 
         for (JsonNode node : listOfCharacters) {
             stringListOfCharacters.add(node.asText());
@@ -124,12 +122,10 @@ public class ApacheDestinyService implements DestinyService {
         System.out.println(stringListOfCharacters);
         System.out.println("Please select the character you want from the list above by typing in their name");
 
-        //Confirm my knowledge of what this is actually doing with Al?
         Scanner scan = new Scanner(System.in);
         userInput = scan.nextLine();
 
-        //Is this dreadful practice
-        while (1 == 1) {
+        while (true) {
 
             if (stringListOfCharacters.contains(userInput)) {
                 break;
