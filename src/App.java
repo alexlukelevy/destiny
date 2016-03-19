@@ -8,6 +8,6 @@ public class App {
                 System.getenv("DESTINY_API_KEY")
         );
         long membershipId = destinyService.getMembershipId(2, args[0]);
-        System.out.println(destinyService.getAccountSummary(2, membershipId));
+        System.out.println(destinyService.getCharacterInventory(2, membershipId));
     }
 }
