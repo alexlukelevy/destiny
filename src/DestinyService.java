@@ -9,5 +9,4 @@ public interface DestinyService {
     String getCharacterSummary(int membershipTypeId, long membershipId) throws IOException;
 
     String getCharacterInventory(int membershipTypeId, long membershipId) throws IOException;
-
 }

@@ -25,7 +25,8 @@ public class ApacheDestinyService implements DestinyService {
         this.authHeader = new BasicHeader("X-API-Key", apiKey);
     }
 
-    //TODO Method with String input that returns a specific element
+    // TODO: Create method with String input that returns a specific element
+
     @Override
     public String getAccountSummary(int membershipTypeId, long membershipId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Summary";
@@ -53,7 +54,6 @@ public class ApacheDestinyService implements DestinyService {
     }
     @Override
     public String getCharacterInventory(int membershipTypeId, long membershipId) throws IOException {
-    ///{membershipType}/Account/{destinyMembershipId}/Character/{characterId}/Activities/
         long characterId = getCharacterId(membershipTypeId, membershipId);
 
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
