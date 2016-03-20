@@ -1,7 +1,14 @@
+import commands.CharacterCommand;
+import commands.DestinyCommand;
+import io.CommandLineInterface;
+import io.CommandType;
 import service.ApacheDestinyService;
+import service.ConsolePrintingService;
 import service.DestinyService;
+import service.PrintingService;
 
 import java.io.IOException;
+import java.util.EnumMap;
 
 public class App {
 
@@ -10,7 +17,11 @@ public class App {
                 "http://www.bungie.net/Platform/Destiny",
                 System.getenv("DESTINY_API_KEY")
         );
-        long membershipId = destinyService.getMembershipId(2, args[0]);
-        System.out.println(destinyService.getCharacterInventory(2, membershipId));
+        PrintingService printingService = new ConsolePrintingService();
+
+        EnumMap<CommandType, DestinyCommand> commands = new EnumMap<>(CommandType.class);
+        commands.put(CommandType.character, new CharacterCommand(destinyService, printingService));
+
+        new CommandLineInterface(commands).run(args);
     }
 }
