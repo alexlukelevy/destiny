@@ -72,8 +72,62 @@ public class ApacheDestinyService implements DestinyService {
     public String getCharacterInventory(int membershipTypeId, long membershipId, long characterId) throws IOException {
 
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
+        String jsonReturnData = getJson(serviceUrl);
+        return getListOfJsonFields(jsonReturnData, "items");
+    }
+
+    @Override
+    public ArrayList<String> getCharacterWeapons(int membershipTypeId, long membershipId) throws IOException {
+        // Should I be using List here, not sure why I have to use List for root.findValues?
+        List<JsonNode> allCharacterItems = getCharacterInventoryItems(membershipTypeId, membershipId);
+        List<String> allWeaponItems = getWeaponsFromItemList(allCharacterItems);
+        ArrayList<String> weaponSummaries = new ArrayList<>();
+
+        for (String itemId : allWeaponItems) {
+            weaponSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId));
+        }
+        return weaponSummaries;
+    }
+
+    // How would i do TDD on this, i can't exactly pass my own JsonNode object very easily
+    private String getCharacterItemSummary(int membershipTypeId, long membershipId, String itemId) throws IOException {
+        long characterId = getCharacterId(membershipTypeId, membershipId);
+        String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/" + itemId;
 
         return getJson(serviceUrl);
+    }
+
+    private List<String> getWeaponsFromItemList(List<JsonNode> items) throws IOException {
+        ArrayList<String> weaponBucketHashValues = new ArrayList<>();
+        // There must be a better way to achieve this, shall i just make them all strings? Thanks what the API calls use...
+        weaponBucketHashValues.add("1498876634");
+        weaponBucketHashValues.add("2465295065");
+        weaponBucketHashValues.add("953998645");
+
+        //Could make these strings
+        Map<String, String> itemBucketMap = new HashMap<>();
+        ArrayList<String> itemIds = new ArrayList<>();
+        ArrayList<String> itemBucketHashes = new ArrayList<>();
+
+        // Is this always going to write the data to the aList in the same order its found in JSON?
+        for (JsonNode node : items) {
+            itemBucketHashes.addAll((getListOfJsonFieldsAsText(node, "bucketHash")));
+            itemIds.addAll((getListOfJsonFieldsAsText(node, "itemId")));
+        }
+
+        for (int i = 0; i < itemBucketHashes.size(); i++) {
+            itemBucketMap.put(itemBucketHashes.get(i), itemIds.get(i));
+        }
+
+        ArrayList<String> weaponItems = new ArrayList<>();
+
+        for (int i = 0; i < itemBucketHashes.size(); i++) {
+            if (weaponBucketHashValues.contains(itemBucketHashes.get(i))) {
+                weaponItems.add(itemIds.get(i));
+            }
+        }
+
+        return weaponItems;
     }
 
     private String getJson(String serviceUrl) throws IOException {
@@ -95,11 +149,11 @@ public class ApacheDestinyService implements DestinyService {
         return content.toString();
     }
 
-    private String getFirstSingleJsonField(String jsonString, String field) throws IOException {
+    private JsonNode getFirstSingleJsonField(String jsonString, String field) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jsonString);
 
-        return root.findValue(field).asText();
+        return root.findValue(field);
     }
 
     /**
