@@ -1,6 +1,5 @@
-package io;
+package commands;
 
-import commands.DestinyCommand;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,9 +20,9 @@ public class CommandLineInterfaceTest {
     }
 
     @Test
-    public void shouldDelegateAppropriatelyWhenGivenSupportedCliArgument() {
+    public void shouldDelegateAppropriatelyWhenGivenSupportedCliArgument() throws Exception {
         // Given
-        String[] args = new String[]{"character", "BeneficialBewick"};
+        String[] args = new String[]{"character"};
 
         DestinyCommand command = mock(DestinyCommand.class);
         commands.put(CommandType.character, command);
@@ -32,11 +31,11 @@ public class CommandLineInterfaceTest {
         cli.run(args);
 
         // Then
-        verify(command).run(args[1]);
+        verify(command).run(args);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenGivenAnUnsupportedCliArgument() {
+    public void shouldThrowExceptionWhenGivenAnUnsupportedCliArgument() throws Exception {
         // Given
         String[] args = new String[]{"geeza"};
 

@@ -1,6 +1,4 @@
-package io;
-
-import commands.DestinyCommand;
+package commands;
 
 import java.util.EnumMap;
 
@@ -12,13 +10,12 @@ public class CommandLineInterface {
         this.commands = commands;
     }
 
-    public void run(String[] args) {
+    public void run(String[] args) throws Exception {
         CommandType commandType = CommandType.valueOf(args[0]);
-        String username = args[1];
 
         if (commands.containsKey(commandType)) {
             DestinyCommand destinyCommand = commands.get(commandType);
-            destinyCommand.run(username);
+            destinyCommand.run(args);
         } else {
             throw new IllegalArgumentException(args[0] + " is not a supported command");
         }
