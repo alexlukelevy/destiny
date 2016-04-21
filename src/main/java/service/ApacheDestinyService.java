@@ -1,3 +1,5 @@
+package service;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Header;
@@ -9,9 +11,7 @@ import org.apache.http.message.BasicHeader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class ApacheDestinyService implements DestinyService {
 
@@ -34,9 +34,7 @@ public class ApacheDestinyService implements DestinyService {
     }
 
     @Override
-    public String getCharacterSummary(int membershipTypeId, long membershipId) throws IOException {
-        long characterId = getCharacterId(membershipTypeId, membershipId);
-
+    public String getCharacterSummary(int membershipTypeId, long membershipId, long characterId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId;
 
         return getJson(serviceUrl);
@@ -52,9 +50,26 @@ public class ApacheDestinyService implements DestinyService {
 
         return root.findValue("membershipId").asLong();
     }
+
     @Override
-    public String getCharacterInventory(int membershipTypeId, long membershipId) throws IOException {
-        long characterId = getCharacterId(membershipTypeId, membershipId);
+    public long getCharacterId(int membershipTypeId, long membershipId, int classTypeId) throws IOException {
+        String json = getAccountSummary(membershipTypeId, membershipId);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(json);
+        JsonNode characters = root.findValue("characters");
+
+        for(JsonNode character : characters) {
+            if(character.findValue("classType").asInt() == classTypeId) {
+                return character.findValue("characterId").asLong();
+            }
+        }
+
+        throw new RuntimeException("Could not find the characterId based on the arguments supplied");
+    }
+
+    @Override
+    public String getCharacterInventory(int membershipTypeId, long membershipId, long characterId) throws IOException {
 
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
 
@@ -95,46 +110,5 @@ public class ApacheDestinyService implements DestinyService {
         JsonNode root = mapper.readTree(jsonString);
 
         return root.findValues(field);
-    }
-
-    public long getCharacterId(int membershipTypeId, long membershipId) throws IOException {
-        String accountSummaryJson = getAccountSummary(membershipTypeId, membershipId);
-        List<JsonNode> allCharacters = getListOfJsonFields(accountSummaryJson, "characterId");
-        long characterId;
-
-        if (allCharacters.size() == 1) {
-            characterId = allCharacters.get(0).asLong();
-        } else {
-            characterId = Long.parseLong(userInputSelectCharacter(allCharacters));
-        }
-
-        return characterId;
-    }
-
-    private String userInputSelectCharacter(List<JsonNode> listOfCharacters) {
-        String userInput;
-        List<String> stringListOfCharacters = new ArrayList<>();
-
-        for (JsonNode node : listOfCharacters) {
-            stringListOfCharacters.add(node.asText());
-        }
-
-        System.out.println(stringListOfCharacters);
-        System.out.println("Please select the character you want from the list above by typing in their name");
-
-        Scanner scan = new Scanner(System.in);
-        userInput = scan.nextLine();
-
-        while (true) {
-
-            if (stringListOfCharacters.contains(userInput)) {
-                break;
-            } else {
-                System.out.println(userInput + " is not a valid value, please enter a value from the list below");
-                System.out.println(stringListOfCharacters);
-                userInput = scan.nextLine();
-            }
-        }
-        return userInput;
     }
 }
