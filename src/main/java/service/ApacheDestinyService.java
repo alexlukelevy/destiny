@@ -69,8 +69,8 @@ public class ApacheDestinyService implements DestinyService {
     }
 
     @Override
-    public String getCharacterInventory(int membershipTypeId, long membershipId, long characterId) throws IOException {
-
+        public List<JsonNode> getCharacterInventoryItems(int membershipTypeId, long membershipId) throws IOException {
+        long characterId = getCharacterId(membershipTypeId, membershipId);
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
         String jsonReturnData = getJson(serviceUrl);
         return getListOfJsonFields(jsonReturnData, "items");
@@ -89,6 +89,21 @@ public class ApacheDestinyService implements DestinyService {
         return weaponSummaries;
     }
 
+    @Override
+    public ArrayList<String> getCharacterArmor(int membershipTypeId, long membershipId) throws IOException {
+        // Should I be using List here, not sure why I have to use List for root.findValues?
+        List<JsonNode> allCharacterItems = getCharacterInventoryItems(membershipTypeId, membershipId);
+        List<String> allArmorItems = getArmorFromItemList(allCharacterItems);
+        ArrayList<String> armorSummaries = new ArrayList<>();
+
+        for (String itemId : allArmorItems) {
+            armorSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId));
+        }
+        return armorSummaries;
+    }
+
+    // TODO: Refactor below method when we have feature/3 using the Character class to ge the character ID
+
     // How would i do TDD on this, i can't exactly pass my own JsonNode object very easily
     private String getCharacterItemSummary(int membershipTypeId, long membershipId, String itemId) throws IOException {
         long characterId = getCharacterId(membershipTypeId, membershipId);
@@ -105,7 +120,6 @@ public class ApacheDestinyService implements DestinyService {
         weaponBucketHashValues.add("953998645");
 
         //Could make these strings
-        Map<String, String> itemBucketMap = new HashMap<>();
         ArrayList<String> itemIds = new ArrayList<>();
         ArrayList<String> itemBucketHashes = new ArrayList<>();
 
@@ -113,10 +127,6 @@ public class ApacheDestinyService implements DestinyService {
         for (JsonNode node : items) {
             itemBucketHashes.addAll((getListOfJsonFieldsAsText(node, "bucketHash")));
             itemIds.addAll((getListOfJsonFieldsAsText(node, "itemId")));
-        }
-
-        for (int i = 0; i < itemBucketHashes.size(); i++) {
-            itemBucketMap.put(itemBucketHashes.get(i), itemIds.get(i));
         }
 
         ArrayList<String> weaponItems = new ArrayList<>();
@@ -128,6 +138,36 @@ public class ApacheDestinyService implements DestinyService {
         }
 
         return weaponItems;
+    }
+
+    private List<String> getArmorFromItemList(List<JsonNode> items) throws IOException {
+        ArrayList<String> armorBucketHashValues = new ArrayList<>();
+        armorBucketHashValues.add("4023194814");
+        armorBucketHashValues.add("3448274439");
+        armorBucketHashValues.add("3551918588");
+        armorBucketHashValues.add("14239492");
+        armorBucketHashValues.add("20886954");
+        armorBucketHashValues.add("1585787867");
+        armorBucketHashValues.add("434908299");
+
+        ArrayList<String> itemIds = new ArrayList<>();
+        ArrayList<String> itemBucketHashes = new ArrayList<>();
+
+        // Is this always going to write the data to the aList in the same order its found in JSON?
+        for (JsonNode node : items) {
+            itemBucketHashes.addAll((getListOfJsonFieldsAsText(node, "bucketHash")));
+            itemIds.addAll((getListOfJsonFieldsAsText(node, "itemId")));
+        }
+
+
+        ArrayList<String> armorItems = new ArrayList<>();
+        for (int i = 0; i < itemBucketHashes.size(); i++) {
+            if (armorBucketHashValues.contains(itemBucketHashes.get(i))) {
+                armorItems.add(itemIds.get(i));
+            }
+        }
+
+        return armorItems;
     }
 
     private String getJson(String serviceUrl) throws IOException {
@@ -164,5 +204,10 @@ public class ApacheDestinyService implements DestinyService {
         JsonNode root = mapper.readTree(jsonString);
 
         return root.findValues(field);
+    }
+
+    private List<String> getListOfJsonFieldsAsText(JsonNode root, String field) throws IOException {
+
+        return root.findValuesAsText(field);
     }
 }

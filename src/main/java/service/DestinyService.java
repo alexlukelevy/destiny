@@ -12,13 +12,16 @@ public interface DestinyService {
 
     long getMembershipId(int membershipTypeId, String username) throws IOException;
 
-    long getCharacterId(int membershipTypeId, long membershipId, int classTypeId) throws IOException;
 
+    String getCharacterSummary(int membershipTypeId, long membershipId, long characterId) throws IOException;
+
+    long getCharacterId(int membershipTypeId, long membershipId, int classTypeId) throws IOException;
+    
     List<JsonNode> getCharacterInventoryItems(int membershipTypeId, long membershipId) throws IOException;
 
     ArrayList<String> getCharacterWeapons(int membershipTypeId, long membershipId) throws IOException;
-    
-    String getCharacterSummary(int membershipTypeId, long membershipId, long characterId) throws IOException;
+
+    ArrayList<String> getCharacterArmor(int membershipTypeId, long membershipId) throws IOException;
 
     String getCharacterInventory(int membershipTypeId, long membershipId, long characterId) throws IOException;
 }
