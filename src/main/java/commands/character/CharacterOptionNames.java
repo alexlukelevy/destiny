@@ -3,7 +3,8 @@ package commands.character;
 public enum CharacterOptionNames {
 
     Username("u", "username"),
-    ClassType("c", "class");
+    ClassType("c", "class"),
+    Instruction("i", "instruction");
 
     private String shortOpt;
     private String longOpt;

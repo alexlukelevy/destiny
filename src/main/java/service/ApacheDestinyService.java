@@ -11,6 +11,7 @@ import org.apache.http.message.BasicHeader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApacheDestinyService implements DestinyService {
@@ -24,8 +25,6 @@ public class ApacheDestinyService implements DestinyService {
         this.baseUrl = baseUrl;
         this.authHeader = new BasicHeader("X-API-Key", apiKey);
     }
-
-    // TODO: Create method with String input that returns a specific element
 
     @Override
     public String getAccountSummary(int membershipTypeId, long membershipId) throws IOException {
@@ -68,46 +67,52 @@ public class ApacheDestinyService implements DestinyService {
         throw new RuntimeException("Could not find the characterId based on the arguments supplied");
     }
 
+    // TODO: Why is this API call not returning all inventory items
     @Override
-        public List<JsonNode> getCharacterInventoryItems(int membershipTypeId, long membershipId) throws IOException {
-        long characterId = getCharacterId(membershipTypeId, membershipId);
+        public List<JsonNode> getCharacterInventoryItems(int membershipTypeId, long membershipId, long characterId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/Summary";
         String jsonReturnData = getJson(serviceUrl);
         return getListOfJsonFields(jsonReturnData, "items");
     }
-
+    // TODO: Expand this and the armor version to show a nice view of the weapons/armor Maybe?
     @Override
-    public ArrayList<String> getCharacterWeapons(int membershipTypeId, long membershipId) throws IOException {
-        // Should I be using List here, not sure why I have to use List for root.findValues?
-        List<JsonNode> allCharacterItems = getCharacterInventoryItems(membershipTypeId, membershipId);
+    public ArrayList<String> getCharacterWeapons(int membershipTypeId, long membershipId, List<JsonNode> allCharacterItems, long characterId) throws IOException {
         List<String> allWeaponItems = getWeaponsFromItemList(allCharacterItems);
         ArrayList<String> weaponSummaries = new ArrayList<>();
 
         for (String itemId : allWeaponItems) {
-            weaponSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId));
+            weaponSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId, characterId));
         }
         return weaponSummaries;
     }
 
     @Override
-    public ArrayList<String> getCharacterArmor(int membershipTypeId, long membershipId) throws IOException {
-        // Should I be using List here, not sure why I have to use List for root.findValues?
-        List<JsonNode> allCharacterItems = getCharacterInventoryItems(membershipTypeId, membershipId);
+    public ArrayList<String> getCharacterArmor(int membershipTypeId, long membershipId, List<JsonNode> allCharacterItems, long characterId) throws IOException {
         List<String> allArmorItems = getArmorFromItemList(allCharacterItems);
         ArrayList<String> armorSummaries = new ArrayList<>();
 
         for (String itemId : allArmorItems) {
-            armorSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId));
+            armorSummaries.add(getCharacterItemSummary(membershipTypeId, membershipId, itemId, characterId));
         }
         return armorSummaries;
     }
 
-    // TODO: Refactor below method when we have feature/3 using the Character class to ge the character ID
+
 
     // How would i do TDD on this, i can't exactly pass my own JsonNode object very easily
-    private String getCharacterItemSummary(int membershipTypeId, long membershipId, String itemId) throws IOException {
-        long characterId = getCharacterId(membershipTypeId, membershipId);
+    private String getCharacterItemSummary(int membershipTypeId, long membershipId, String itemId, long characterId) throws IOException {
         String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Character/" + characterId + "/Inventory/" + itemId;
+
+        return getJson(serviceUrl);
+    }
+
+    /*
+    Use the following for types
+        - An Item: 'InventoryItem'
+        - TBC...
+    */
+    private String getItemManifestJson (String type, String itemId) throws IOException {
+        String serviceUrl = "/Manifest" + type + "/" + itemId;
 
         return getJson(serviceUrl);
     }

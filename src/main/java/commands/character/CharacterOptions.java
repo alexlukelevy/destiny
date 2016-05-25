@@ -8,7 +8,8 @@ public class CharacterOptions {
     public Options getOptions() {
         return new Options()
                 .addOption(getUsernameOption())
-                .addOption(getClassTypeOption());
+                .addOption(getClassTypeOption())
+                .addOption(getInstructionOption());
     }
 
     public Option getUsernameOption() {
@@ -28,6 +29,18 @@ public class CharacterOptions {
                 .desc("the class of your character (hunter, titan or warlock)")
                 .required()
                 .argName("classtype")
+                .hasArg()
+                .numberOfArgs(1)
+                .build();
+    }
+    // Why do you get the short option as the first param?
+    // How does the command like ensure its got a valid instruction, should this be done in the part of code that is called?
+    public Option getInstructionOption() {
+        return Option.builder(CharacterOptionNames.Instruction.getShortOpt())
+                .longOpt(CharacterOptionNames.Instruction.getLongOpt())
+                .desc("the instruction for the program (getWeapons, getSummary)")
+                .required()
+                .argName("instruction")
                 .hasArg()
                 .numberOfArgs(1)
                 .build();
