@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
 import java.io.BufferedReader;
@@ -16,12 +17,12 @@ import java.util.List;
 
 public class ApacheDestinyService implements DestinyService {
 
-    private final DefaultHttpClient httpClient;
+    private final CloseableHttpClient httpClient;
     private final String baseUrl;
     private final Header authHeader;
 
     public ApacheDestinyService(String baseUrl, String apiKey) {
-        this.httpClient = new DefaultHttpClient();
+        this.httpClient = HttpClients.createDefault();
         this.baseUrl = baseUrl;
         this.authHeader = new BasicHeader("X-API-Key", apiKey);
     }
@@ -163,7 +164,6 @@ public class ApacheDestinyService implements DestinyService {
             itemBucketHashes.addAll((getListOfJsonFieldsAsText(node, "bucketHash")));
             itemIds.addAll((getListOfJsonFieldsAsText(node, "itemId")));
         }
-
 
         ArrayList<String> armorItems = new ArrayList<>();
         for (int i = 0; i < itemBucketHashes.size(); i++) {
