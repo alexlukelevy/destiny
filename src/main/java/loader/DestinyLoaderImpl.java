@@ -1,22 +1,36 @@
-package service;
+package loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import entities.*;
+import service.DestinyService;
 
 import java.io.IOException;
 import java.util.*;
 
 public class DestinyLoaderImpl implements DestinyLoader {
 
-    private DestinyApi api;
+    private DestinyService api;
 
-    public DestinyLoaderImpl(DestinyApi api) {
+    public DestinyLoaderImpl(DestinyService api) {
         this.api = api;
     }
 
     @Override
+    public long getMembershipId(String username) throws IOException {
+        JsonNode root =  api.getMembership(2, username);
+        return root.findValue("membershipId").asLong();
+    }
 
+    @Override
+    public List<DestinyCharacter> getCharacters(long membershipId) {
+        // TODO: to implement
+
+        return null;
+    }
+
+    @Override
     public List<Bucket> getInventory(long membershipId, long characterId) throws IOException {
-        JsonNode root = this.api.getInventory(membershipId, characterId);
+        JsonNode root = api.getInventory(2, membershipId, characterId);
 
         // TODO: where to filter for weapons and items?
         Set<String> identifiers = new HashSet<>();

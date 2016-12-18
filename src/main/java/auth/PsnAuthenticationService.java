@@ -1,4 +1,4 @@
-package service;
+package auth;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -24,6 +24,14 @@ public class PsnAuthenticationService implements AuthenticationService {
     private static final String BUNGIE_SIGNIN_URI = "https://www.bungie.net/en/User/SignIn/Psnid";
     private static final String PSN_OAUTH_URI = "https://auth.api.sonyentertainmentnetwork.com/login.do";
 
+    private String psnId;
+    private String psnPass;
+
+    public PsnAuthenticationService(String psnId, String psnPass) {
+        this.psnId = psnId;
+        this.psnPass = psnPass;
+    }
+
     @Override
     public AuthenticationContext authenticate() throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -38,8 +46,8 @@ public class PsnAuthenticationService implements AuthenticationService {
         // post psn jsessionid and auth location
         HttpPost post = new HttpPost(PSN_OAUTH_URI);
         List<NameValuePair> credentials = new ArrayList<>();
-        credentials.add(new BasicNameValuePair("j_username", "<PSN-EMAIL>"));
-        credentials.add(new BasicNameValuePair("j_password", "<PSN-PASSWORD>"));
+        credentials.add(new BasicNameValuePair("j_username", psnId));
+        credentials.add(new BasicNameValuePair("j_password", psnPass));
         post.setEntity(new UrlEncodedFormEntity(credentials));
 
         HttpResponse postResponse = httpClient.execute(post, localContext);

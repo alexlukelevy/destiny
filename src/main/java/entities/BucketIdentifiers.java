@@ -1,4 +1,4 @@
-package service;
+package entities;
 
 
 // TODO: rename to weapon and armour identifiers?

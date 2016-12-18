@@ -1,40 +1,43 @@
-import commands.CommandLineInterface;
-import commands.CommandType;
-import commands.DestinyCommand;
-import commands.character.CharacterCommand;
-import commands.character.CharacterOptions;
-import org.apache.commons.cli.Options;
+import auth.AuthenticationService;
+import auth.PsnAuthenticationService;
+import cli.CommandLineInterface;
+import cli.Environment;
+import cli.RunConfiguration;
+import entities.Bucket;
+import entities.DestinyCharacter;
+import optimiser.LightLevelOptimiser;
+import optimiser.LightLevelOptimiserImpl;
+import org.apache.http.impl.client.HttpClients;
+import printing.ConsolePrintingService;
+import printing.PrintingService;
 import service.ApacheDestinyService;
-import service.ConsolePrintingService;
+import loader.DestinyLoader;
+import loader.DestinyLoaderImpl;
 import service.DestinyService;
-import service.PrintingService;
 
-import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 
 public class App {
 
     public static void main(String[] args) throws Exception {
-        DestinyService destinyService = new ApacheDestinyService(
-                "http://www.bungie.net/Platform/Destiny",
-                System.getenv("DESTINY_API_KEY")
-        );
+        Environment environment = new Environment();
+        CommandLineInterface cli = new CommandLineInterface(environment);
+        RunConfiguration config = cli.parse(args);
+        AuthenticationService authenticationService = new PsnAuthenticationService(config.psnId, config.psnPass);
+        DestinyService destinyService = new ApacheDestinyService(authenticationService, HttpClients.createDefault());
+        DestinyLoader loader = new DestinyLoaderImpl(destinyService);
         PrintingService printingService = new ConsolePrintingService();
+        LightLevelOptimiser optimiser = new LightLevelOptimiserImpl();
 
-        EnumMap<CommandType, DestinyCommand> commands = getCommands(destinyService, printingService);
+        long membershipId = loader.getMembershipId(config.gamerTag);
+        List<DestinyCharacter> characters = loader.getCharacters(membershipId);
 
-        new CommandLineInterface(commands).run(args);
-    }
-
-    private static EnumMap<CommandType, DestinyCommand> getCommands(
-            DestinyService destinyService,
-            PrintingService printingService) {
-
-        EnumMap<CommandType, DestinyCommand> commands = new EnumMap<>(CommandType.class);
-
-        // character
-        Options characterOptions = new CharacterOptions().getOptions();
-        commands.put(CommandType.character, new CharacterCommand(characterOptions, destinyService, printingService));
-
-        return commands;
+        for(DestinyCharacter character : characters) {
+            List<Bucket> buckets = loader.getInventory(membershipId, character.getCharacterId());
+            HashMap<String, String> solution = optimiser.optimise(buckets);
+            printingService.print("Character: " + character.getCharacterId());
+            printingService.print(solution);
+        }
     }
 }
