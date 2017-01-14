@@ -3,8 +3,7 @@ package service;
 import auth.AuthenticationContext;
 import auth.AuthenticationService;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import matchers.ToStringMatcher;
+import matcher.ToStringMatcher;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -23,8 +22,10 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static util.TestUtils.asJsonNode;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApacheDestinyServiceTest {
@@ -54,17 +55,51 @@ public class ApacheDestinyServiceTest {
         String username = "username";
         String json = "{ \"id\": 1 }";
 
-        givenHttpClient("/SearchDestinyPlayer/2/username").willReturn(new MockHttpResponse(json));
+        givenHttpClientGet("SearchDestinyPlayer/2/username").willReturn(new MockHttpResponse(json));
 
         // When
         JsonNode membership = classUnderTest.getMembership(membershipTypeId, username);
 
         // Then
-        assertThat(membership, equalTo(new ObjectMapper().readTree(json)));
+        assertThat(membership, equalTo(asJsonNode(json)));
     }
 
-    public BDDMockito.BDDMyOngoingStubbing<CloseableHttpResponse> givenHttpClient(String url) throws IOException {
-        HttpGet get = new HttpGet("http://www.bungie.net/Platform/Destiny" + url);
+    @Test
+    public void shouldGetCharactersFromAccountSummary() throws IOException {
+        // Given
+        int membershipTypeId = 2;
+        int membershipId = 1;
+        String json = "{ \"characters\": [ ], \"level\": 40 }";
+
+        givenHttpClientGet("2/Account/1/Summary").willReturn(new MockHttpResponse(json));
+
+        // When
+        JsonNode characters = classUnderTest.getCharacters(membershipTypeId, membershipId);
+
+        // Then
+        assertThat(characters, equalTo(asJsonNode("[]")));
+    }
+
+    @Test
+    public void shouldGetInventoryForCharacter() throws IOException {
+        // Given
+        int membershipTypeId = 2;
+        int membershipId = 1;
+        int characterId = 3;
+
+        String json = "{ \"data\": { } }";
+
+        givenHttpClientGet("2/Account/1/Character/3/Inventory/?definitions=true").willReturn(new MockHttpResponse(json));
+
+        // When
+        JsonNode characters = classUnderTest.getInventory(membershipTypeId, membershipId, characterId);
+
+        // Then
+        assertThat(characters, equalTo(asJsonNode(json)));
+    }
+
+    public BDDMockito.BDDMyOngoingStubbing<CloseableHttpResponse> givenHttpClientGet(String url) throws IOException {
+        HttpGet get = new HttpGet("http://www.bungie.net/Platform/Destiny/" + url);
         get.setHeader("X-API-KEY", authenticationContext.apiKey);
         get.setHeader("x-csrf", authenticationContext.xsrf);
         return given(httpClient.execute(argThat(equivalentTo(get)), eq(authenticationContext.context)));

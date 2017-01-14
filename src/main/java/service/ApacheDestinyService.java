@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class ApacheDestinyService implements DestinyService {
 
-    private static final String BASE_URL = "http://www.bungie.net/Platform/Destiny";
+    private static final String BASE_URL = "http://www.bungie.net/Platform/Destiny/";
 
     private final AuthenticationService authenticationService;
     private final CloseableHttpClient httpClient;
@@ -24,13 +24,13 @@ public class ApacheDestinyService implements DestinyService {
 
     @Override
     public JsonNode getMembership(int membershipTypeId, String username) throws IOException {
-        String serviceUrl = "/SearchDestinyPlayer/" + membershipTypeId + "/" + username;
+        String serviceUrl = "SearchDestinyPlayer/" + membershipTypeId + "/" + username;
         return getJson(serviceUrl);
     }
 
     @Override
     public JsonNode getCharacters(int membershipTypeId, long membershipId) throws IOException {
-        String serviceUrl = "/" + membershipTypeId + "/Account/" + membershipId + "/Summary";
+        String serviceUrl = membershipTypeId + "/Account/" + membershipId + "/Summary";
         JsonNode root = getJson(serviceUrl);
         return root.findValue("characters");
     }

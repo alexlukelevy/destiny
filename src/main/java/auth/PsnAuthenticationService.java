@@ -73,7 +73,7 @@ public class PsnAuthenticationService implements AuthenticationService {
     }
 
     private String getCookieByName(String name, CookieStore cookieStore) {
-        for(Cookie cookie : cookieStore.getCookies()) {
+        for (Cookie cookie : cookieStore.getCookies()) {
             if (cookie.getName().equals(name)) {
                 return cookie.getValue();
             }

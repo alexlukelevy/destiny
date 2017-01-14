@@ -20,7 +20,7 @@ public class CommandLineInterfaceTest {
     private Environment environment;
 
     @Test
-    public void shouldResolveConfigurationFromEnvironmentVariables(){
+    public void shouldResolveConfigurationFromEnvironmentVariables() {
         // Given
         String gamerTag = "tag";
         String psnId = "id";
@@ -30,7 +30,7 @@ public class CommandLineInterfaceTest {
         given(environment.getVariable("PSN_PASS")).willReturn(psnPass);
 
         // When
-        RunConfiguration config = classUnderTest.parse(new String[] {gamerTag});
+        RunConfiguration config = classUnderTest.parse(new String[]{gamerTag});
 
         // Then
         assertThat(config.gamerTag, equalTo(gamerTag));
@@ -39,7 +39,7 @@ public class CommandLineInterfaceTest {
     }
 
     @Test
-    public void shouldResolveConfigurationFromUserInputIfEnvironmentVariablesNotSet(){
+    public void shouldResolveConfigurationFromUserInputIfEnvironmentVariablesNotSet() {
         // Given
         String gamerTag = "tag";
         String psnId = "id";
@@ -49,7 +49,7 @@ public class CommandLineInterfaceTest {
         given(environment.readLine("Please enter your PSN password")).willReturn(psnPass);
 
         // When
-        RunConfiguration config = classUnderTest.parse(new String[] {gamerTag});
+        RunConfiguration config = classUnderTest.parse(new String[]{gamerTag});
 
         // Then
         assertThat(config.gamerTag, equalTo(gamerTag));
@@ -58,7 +58,7 @@ public class CommandLineInterfaceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenGamerTagNotSupplied(){
+    public void shouldThrowExceptionWhenGamerTagNotSupplied() {
         // Given
         String[] args = new String[0];
 

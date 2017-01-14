@@ -5,14 +5,14 @@ import cli.Environment;
 import cli.RunConfiguration;
 import entities.Bucket;
 import entities.DestinyCharacter;
+import loader.DestinyLoader;
+import loader.DestinyLoaderImpl;
 import optimiser.LightLevelOptimiser;
 import optimiser.LightLevelOptimiserImpl;
 import org.apache.http.impl.client.HttpClients;
 import printing.ConsolePrintingService;
 import printing.PrintingService;
 import service.ApacheDestinyService;
-import loader.DestinyLoader;
-import loader.DestinyLoaderImpl;
 import service.DestinyService;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class App {
         long membershipId = loader.getMembershipId(config.gamerTag);
         List<DestinyCharacter> characters = loader.getCharacters(membershipId);
 
-        for(DestinyCharacter character : characters) {
+        for (DestinyCharacter character : characters) {
             List<Bucket> buckets = loader.getInventory(membershipId, character.getCharacterId());
             HashMap<String, String> solution = optimiser.optimise(buckets);
             printingService.print("Character: " + character.getCharacterId());

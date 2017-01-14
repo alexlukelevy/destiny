@@ -9,15 +9,15 @@ import java.util.*;
 
 public class DestinyLoaderImpl implements DestinyLoader {
 
-    private DestinyService api;
+    private DestinyService destinyService;
 
-    public DestinyLoaderImpl(DestinyService api) {
-        this.api = api;
+    public DestinyLoaderImpl(DestinyService destinyService) {
+        this.destinyService = destinyService;
     }
 
     @Override
     public long getMembershipId(String username) throws IOException {
-        JsonNode root =  api.getMembership(2, username);
+        JsonNode root = destinyService.getMembership(2, username);
         return root.findValue("membershipId").asLong();
     }
 
@@ -30,7 +30,7 @@ public class DestinyLoaderImpl implements DestinyLoader {
 
     @Override
     public List<Bucket> getInventory(long membershipId, long characterId) throws IOException {
-        JsonNode root = api.getInventory(2, membershipId, characterId);
+        JsonNode root = destinyService.getInventory(2, membershipId, characterId);
 
         // TODO: where to filter for weapons and items?
         Set<String> identifiers = new HashSet<>();

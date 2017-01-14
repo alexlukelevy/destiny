@@ -1,0 +1,37 @@
+{
+  "Response": {
+    "data": {
+      "buckets": {
+        "Equippable": [
+          {
+            "bucketHash": 1,
+            "items": [
+              {
+                "itemHash": 2,
+                "primaryStat": {
+                  "value": 320
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "definitions": {
+      "items": {
+        "2": {
+          "itemHash": 2,
+          "tierTypeName": "Exotic",
+          "itemName": "honey"
+        }
+      },
+      "buckets": {
+        "1": {
+          "bucketHash": 1,
+          "bucketName": "Test",
+          "bucketIdentifier": "BUCKET_PRIMARY_WEAPON"
+        }
+      }
+    }
+  }
+}

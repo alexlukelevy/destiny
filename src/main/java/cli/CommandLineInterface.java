@@ -18,11 +18,11 @@ public class CommandLineInterface {
         String psnId = environment.getVariable("PSN_ID");
         String psnPass = environment.getVariable("PSN_PASS");
 
-        while(psnId == null) {
+        while (psnId == null) {
             psnId = environment.readLine("Please enter your PSN ID");
         }
 
-        while(psnPass == null) {
+        while (psnPass == null) {
             psnPass = environment.readLine("Please enter your PSN password");
         }
 
