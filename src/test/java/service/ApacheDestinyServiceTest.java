@@ -65,7 +65,7 @@ public class ApacheDestinyServiceTest {
     }
 
     @Test
-    public void shouldGetCharactersFromAccountSummary() throws IOException {
+    public void shouldGetAccountSummary() throws IOException {
         // Given
         int membershipTypeId = 2;
         int membershipId = 1;
@@ -74,10 +74,10 @@ public class ApacheDestinyServiceTest {
         givenHttpClientGet("2/Account/1/Summary/").willReturn(new MockHttpResponse(json));
 
         // When
-        JsonNode characters = classUnderTest.getCharacters(membershipTypeId, membershipId);
+        JsonNode summary = classUnderTest.getAccountSummary(membershipTypeId, membershipId);
 
         // Then
-        assertThat(characters, equalTo(asJsonNode("[]")));
+        assertThat(summary, equalTo(asJsonNode(json)));
     }
 
     @Test

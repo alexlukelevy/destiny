@@ -52,7 +52,7 @@ public class DestinyLoaderImplTest {
         String characterSummary = IOUtils.toString(this.getClass().getResourceAsStream("/account-summary.json"));
         JsonNode root = asJsonNode(characterSummary);
 
-        given(destinyService.getCharacters(membershipTypeId, membershipId)).willReturn(root);
+        given(destinyService.getAccountSummary(membershipTypeId, membershipId)).willReturn(root);
 
         // When
         List<DestinyCharacter> characters = classUnderTest.getCharacters(membershipId);
@@ -71,17 +71,25 @@ public class DestinyLoaderImplTest {
         long membershipId = 3;
         long characterId = 4;
 
-        String inventory = IOUtils.toString(this.getClass().getResourceAsStream("/inventory.json"));
-        JsonNode root = asJsonNode(inventory);
+        String inventoryJson = IOUtils.toString(this.getClass().getResourceAsStream("/inventory.json"));
+        JsonNode root = asJsonNode(inventoryJson);
         given(destinyService.getInventory(membershipTypeId, membershipId, characterId)).willReturn(root);
 
         // When
-        List<Bucket> buckets = classUnderTest.getInventory(membershipId, characterId);
+        Inventory inventory = classUnderTest.getInventory(membershipId, characterId);
 
         // Then
-        assertThat(buckets.size(), equalTo(1));
-        assertThat(buckets.get(0).name, equalTo("Test"));
-        assertThat(buckets.get(0).items.size(), equalTo(1));
-        assertThat(buckets.get(0).items.get(0), equalTo(new Item("honey", 320, ItemGrade.Exotic)));
+        List<Bucket> weapons = inventory.getWeapons();
+        List<Bucket> armour = inventory.getArmour();
+
+        assertThat(weapons.size(), equalTo(1));
+        assertThat(weapons.get(0).getName(), equalTo("Primary Weapons"));
+        assertThat(weapons.get(0).getItems().size(), equalTo(1));
+        assertThat(weapons.get(0).getItems().get(0), equalTo(new Item("Rifle", 320, ItemGrade.Exotic)));
+
+        assertThat(armour.size(), equalTo(1));
+        assertThat(armour.get(0).getName(), equalTo("Gauntlets"));
+        assertThat(armour.get(0).getItems().size(), equalTo(1));
+        assertThat(armour.get(0).getItems().get(0), equalTo(new Item("Grasps", 310, ItemGrade.Rare)));
     }
 }

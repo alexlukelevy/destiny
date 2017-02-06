@@ -23,7 +23,7 @@ public class DestinyLoaderImpl implements DestinyLoader {
 
     @Override
     public List<DestinyCharacter> getCharacters(long membershipId) throws IOException {
-        JsonNode root = destinyService.getCharacters(2, membershipId);
+        JsonNode root = destinyService.getAccountSummary(2, membershipId);
 
         JsonNode charactersNode = root.findValue("characters");
 
@@ -42,40 +42,34 @@ public class DestinyLoaderImpl implements DestinyLoader {
     }
 
     @Override
-    public List<Bucket> getInventory(long membershipId, long characterId) throws IOException {
+    public Inventory getInventory(long membershipId, long characterId) throws IOException {
         JsonNode root = destinyService.getInventory(2, membershipId, characterId);
 
-        // TODO: where to filter for weapons and items?
-        Set<String> identifiers = new HashSet<>();
-        for (BucketIdentifiers identifier : BucketIdentifiers.values()) {
-            identifiers.add(identifier.toString());
-        }
-
         // TODO: could this be condensed into one map?
-        Map<String, JsonNode> bucketDefintions = getDefinitions("bucket", root);
+        Map<String, JsonNode> bucketDefinitions = getDefinitions("bucket", root);
         Map<String, JsonNode> itemDefinitions = getDefinitions("item", root);
 
         JsonNode bucketsNode = root.findValue("Response").findValue("data").findPath("buckets").findValue("Equippable");
 
-        List<Bucket> buckets = new ArrayList<>();
+        List<Bucket> weapons = new ArrayList<>();
+        List<Bucket> armour = new ArrayList<>();
 
         for (JsonNode bucket : bucketsNode) {
-
             String bucketHash = bucket.findValue("bucketHash").asText();
-            JsonNode bucketDef = bucketDefintions.get(bucketHash);
+            JsonNode bucketDef = bucketDefinitions.get(bucketHash);
             String bucketName = bucketDef.findValue("bucketName").asText();
             String bucketIdentifier = bucketDef.findValue("bucketIdentifier").asText();
 
-            if (!identifiers.contains(bucketIdentifier)) {
-                continue;
+            if (WeaponBucketIdentifiers.contains(bucketIdentifier)) {
+                List<Item> items = getItems(bucket.findValue("items"), itemDefinitions);
+                weapons.add(new Bucket(bucketName, items));
+            } else if (ArmourBucketIdentifiers.contains(bucketIdentifier)) {
+                List<Item> items = getItems(bucket.findValue("items"), itemDefinitions);
+                armour.add(new Bucket(bucketName, items));
             }
-
-            List<Item> items = getItems(bucket.findValue("items"), itemDefinitions);
-
-            buckets.add(new Bucket(bucketName, items));
         }
 
-        return buckets;
+        return new Inventory(weapons, armour);
     }
 
     private static List<Item> getItems(JsonNode itemsNode, Map<String, JsonNode> itemDefinitions) {

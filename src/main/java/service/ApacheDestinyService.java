@@ -16,13 +16,13 @@ public class ApacheDestinyService implements DestinyService {
 
     private final AuthenticationService authenticationService;
     private final CloseableHttpClient httpClient;
+    private AuthenticationContext context;
 
     public ApacheDestinyService(AuthenticationService authenticationService, CloseableHttpClient httpClient) {
         this.authenticationService = authenticationService;
         this.httpClient = httpClient;
     }
 
-    //  https://www.bungie.net/Platform/Destiny/SearchDestinyPlayer/2/LethalLevy/
     @Override
     public JsonNode getMembership(int membershipTypeId, String username) throws IOException {
         String serviceUrl = "SearchDestinyPlayer/" + membershipTypeId + "/" + username + "/";
@@ -30,10 +30,9 @@ public class ApacheDestinyService implements DestinyService {
     }
 
     @Override
-    public JsonNode getCharacters(int membershipTypeId, long membershipId) throws IOException {
+    public JsonNode getAccountSummary(int membershipTypeId, long membershipId) throws IOException {
         String serviceUrl = membershipTypeId + "/Account/" + membershipId + "/Summary/";
-        JsonNode root = getJson(serviceUrl);
-        return root.findValue("characters");
+        return getJson(serviceUrl);
     }
 
     @Override
@@ -49,10 +48,17 @@ public class ApacheDestinyService implements DestinyService {
     }
 
     private HttpResponse executeGet(String url) throws IOException {
-        AuthenticationContext cxt = this.authenticationService.authenticate();
+        AuthenticationContext cxt = getAuthContext();
         HttpGet inventory = new HttpGet(BASE_URL + url);
         inventory.setHeader("X-API-Key", cxt.apiKey);
         inventory.setHeader("x-csrf", cxt.xsrf);
         return this.httpClient.execute(inventory, cxt.context);
+    }
+
+    private AuthenticationContext getAuthContext() throws IOException {
+        if (context == null) {
+            context = authenticationService.authenticate();
+        }
+        return context;
     }
 }

@@ -1,12 +1,11 @@
 package optimiser;
 
-import entities.Bucket;
+import entities.Inventory;
 
 import java.util.HashMap;
-import java.util.List;
 
 public interface LightLevelOptimiser {
 
-    HashMap<String, String> optimise(List<Bucket> buckets);
+    HashMap<String, String> optimise(Inventory inventory);
 
 }

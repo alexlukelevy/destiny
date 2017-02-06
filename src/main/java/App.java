@@ -5,6 +5,7 @@ import cli.Environment;
 import cli.RunConfiguration;
 import entities.Bucket;
 import entities.DestinyCharacter;
+import entities.Inventory;
 import loader.DestinyLoader;
 import loader.DestinyLoaderImpl;
 import optimiser.LightLevelOptimiser;
@@ -31,13 +32,13 @@ public class App {
         LightLevelOptimiser optimiser = new LightLevelOptimiserImpl();
 
         long membershipId = loader.getMembershipId(config.gamerTag);
-        // 4611686018437367162
+
         List<DestinyCharacter> characters = loader.getCharacters(membershipId);
 
         for (DestinyCharacter character : characters) {
-            List<Bucket> buckets = loader.getInventory(membershipId, character.getId());
-            HashMap<String, String> solution = optimiser.optimise(buckets);
-            printingService.print("Character: " + character.getId());
+            Inventory inventory = loader.getInventory(membershipId, character.getId());
+            HashMap<String, String> solution = optimiser.optimise(inventory);
+            printingService.print("Character: " + character.getCharacterClass() + " - " + character.getLevel());
             printingService.print(solution);
         }
     }
