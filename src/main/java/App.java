@@ -31,12 +31,13 @@ public class App {
         LightLevelOptimiser optimiser = new LightLevelOptimiserImpl();
 
         long membershipId = loader.getMembershipId(config.gamerTag);
+        // 4611686018437367162
         List<DestinyCharacter> characters = loader.getCharacters(membershipId);
 
         for (DestinyCharacter character : characters) {
-            List<Bucket> buckets = loader.getInventory(membershipId, character.getCharacterId());
+            List<Bucket> buckets = loader.getInventory(membershipId, character.getId());
             HashMap<String, String> solution = optimiser.optimise(buckets);
-            printingService.print("Character: " + character.getCharacterId());
+            printingService.print("Character: " + character.getId());
             printingService.print(solution);
         }
     }

@@ -14,7 +14,7 @@ public class LightLevelOptimiserImpl implements LightLevelOptimiser {
 
         // TODO: actually implement
         for (Bucket bucket : buckets) {
-            results.put(bucket.name, bucket.items.get(0).name);
+            results.put(bucket.name, bucket.items.get(0).getName());
         }
 
         return results;

@@ -22,10 +22,23 @@ public class DestinyLoaderImpl implements DestinyLoader {
     }
 
     @Override
-    public List<DestinyCharacter> getCharacters(long membershipId) {
-        // TODO: to implement
+    public List<DestinyCharacter> getCharacters(long membershipId) throws IOException {
+        JsonNode root = destinyService.getCharacters(2, membershipId);
 
-        return null;
+        JsonNode charactersNode = root.findValue("characters");
+
+        List<DestinyCharacter> characters = new ArrayList<>();
+
+        for(JsonNode character : charactersNode) {
+            JsonNode base = character.findValue("characterBase");
+            long id = base.findValue("characterId").asLong();
+            int classId = base.findValue("classType").asInt();
+            int level = character.findValue("characterLevel").asInt();
+
+            characters.add(new DestinyCharacter(id, CharacterClass.fromId(classId), level));
+        }
+
+        return characters;
     }
 
     @Override

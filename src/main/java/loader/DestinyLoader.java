@@ -10,7 +10,7 @@ public interface DestinyLoader {
 
     long getMembershipId(String username) throws IOException;
 
-    List<DestinyCharacter> getCharacters(long membershipId);
+    List<DestinyCharacter> getCharacters(long membershipId) throws IOException;
 
     List<Bucket> getInventory(long membershipId, long characterId) throws IOException;
 

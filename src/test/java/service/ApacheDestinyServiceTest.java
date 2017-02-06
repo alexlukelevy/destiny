@@ -55,7 +55,7 @@ public class ApacheDestinyServiceTest {
         String username = "username";
         String json = "{ \"id\": 1 }";
 
-        givenHttpClientGet("SearchDestinyPlayer/2/username").willReturn(new MockHttpResponse(json));
+        givenHttpClientGet("SearchDestinyPlayer/2/username/").willReturn(new MockHttpResponse(json));
 
         // When
         JsonNode membership = classUnderTest.getMembership(membershipTypeId, username);
@@ -71,7 +71,7 @@ public class ApacheDestinyServiceTest {
         int membershipId = 1;
         String json = "{ \"characters\": [ ], \"level\": 40 }";
 
-        givenHttpClientGet("2/Account/1/Summary").willReturn(new MockHttpResponse(json));
+        givenHttpClientGet("2/Account/1/Summary/").willReturn(new MockHttpResponse(json));
 
         // When
         JsonNode characters = classUnderTest.getCharacters(membershipTypeId, membershipId);
@@ -99,7 +99,7 @@ public class ApacheDestinyServiceTest {
     }
 
     public BDDMockito.BDDMyOngoingStubbing<CloseableHttpResponse> givenHttpClientGet(String url) throws IOException {
-        HttpGet get = new HttpGet("http://www.bungie.net/Platform/Destiny/" + url);
+        HttpGet get = new HttpGet("https://www.bungie.net/Platform/Destiny/" + url);
         get.setHeader("X-API-KEY", authenticationContext.apiKey);
         get.setHeader("x-csrf", authenticationContext.xsrf);
         return given(httpClient.execute(argThat(equivalentTo(get)), eq(authenticationContext.context)));

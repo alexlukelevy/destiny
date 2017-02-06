@@ -1,7 +1,7 @@
 package loader;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import entities.Bucket;
+import entities.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,13 +9,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import service.DestinyService;
-import sun.nio.ch.IOUtil;
 
 import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static util.TestUtils.asJsonNode;
@@ -46,6 +44,27 @@ public class DestinyLoaderImplTest {
     }
 
     @Test
+    public void shouldLoadTheCharactersFromJson() throws IOException {
+        // Given
+        int membershipTypeId = 2;
+        long membershipId = 3;
+
+        String characterSummary = IOUtils.toString(this.getClass().getResourceAsStream("/account-summary.json"));
+        JsonNode root = asJsonNode(characterSummary);
+
+        given(destinyService.getCharacters(membershipTypeId, membershipId)).willReturn(root);
+
+        // When
+        List<DestinyCharacter> characters = classUnderTest.getCharacters(membershipId);
+
+        // Then
+        assertThat(characters.size(), equalTo(3));
+        assertThat(characters.get(0), equalTo(new DestinyCharacter(123L, CharacterClass.Titan, 10)));
+        assertThat(characters.get(1), equalTo(new DestinyCharacter(456L, CharacterClass.Hunter, 20)));
+        assertThat(characters.get(2), equalTo(new DestinyCharacter(789L, CharacterClass.Warlock, 30)));
+    }
+
+    @Test
     public void shouldLoadTheInventoryFromJson() throws IOException {
         // Given
         int membershipTypeId = 2;
@@ -60,6 +79,9 @@ public class DestinyLoaderImplTest {
         List<Bucket> buckets = classUnderTest.getInventory(membershipId, characterId);
 
         // Then
-        assertThat(buckets, not(equalTo(null)));
+        assertThat(buckets.size(), equalTo(1));
+        assertThat(buckets.get(0).name, equalTo("Test"));
+        assertThat(buckets.get(0).items.size(), equalTo(1));
+        assertThat(buckets.get(0).items.get(0), equalTo(new Item("honey", 320, ItemGrade.Exotic)));
     }
 }
