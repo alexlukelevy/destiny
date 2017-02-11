@@ -48,7 +48,6 @@ public class DestinyLoaderImpl implements DestinyLoader {
     public Inventory getInventory(long membershipId, long characterId) throws IOException {
         JsonNode root = destinyService.getInventory(2, membershipId, characterId);
 
-        // TODO: could this be condensed into one map?
         Map<String, JsonNode> bucketDefinitions = getDefinitions("bucket", root);
         Map<String, JsonNode> itemDefinitions = getDefinitions("item", root);
 

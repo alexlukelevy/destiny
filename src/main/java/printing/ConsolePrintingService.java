@@ -1,8 +1,10 @@
 package printing;
 
-import entities.ArmourBucketIdentifiers;
+import entities.DestinyCharacter;
+import entities.Item;
 import entities.OptimisedInventory;
-import entities.WeaponBucketIdentifiers;
+
+import java.util.Map;
 
 public class ConsolePrintingService implements PrintingService {
 
@@ -12,16 +14,22 @@ public class ConsolePrintingService implements PrintingService {
     }
 
     @Override
-    public void print(OptimisedInventory inventory) {
-        print("Weapons:");
-        for (WeaponBucketIdentifiers identifier : WeaponBucketIdentifiers.values()) {
-            print(identifier.toString() + ": " + inventory.getWeapons());
-        }
-
-        print("Armour:");
-        for (ArmourBucketIdentifiers identifier : ArmourBucketIdentifiers.values()) {
-            print(identifier.toString() + ": " + inventory.getArmour());
-        }
+    public void print(DestinyCharacter character) {
+        print("Character: " + character.getCharacterClass() + " - " + character.getLevel());
     }
 
+    @Override
+    public void print(OptimisedInventory inventory) {
+        print("Weapons:");
+        print(inventory.getWeapons());
+
+        print("Armour:");
+        print(inventory.getArmour());
+    }
+
+    private void print(Map<String, Item> items) {
+        items.forEach((bucketName, item) -> {
+            print(bucketName + ": " + item);
+        });
+    }
 }

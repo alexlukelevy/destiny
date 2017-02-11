@@ -37,7 +37,7 @@ public class App {
         for (DestinyCharacter character : characters) {
             Inventory inventory = loader.getInventory(membershipId, character.getId());
             OptimisedInventory solution = optimiser.optimise(inventory);
-            printingService.print("Character: " + character.getCharacterClass() + " - " + character.getLevel());
+            printingService.print(character);
             printingService.print(solution);
         }
     }

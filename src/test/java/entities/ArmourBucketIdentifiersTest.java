@@ -10,7 +10,6 @@ public class ArmourBucketIdentifiersTest {
     @Test
     public void shouldCheckEnumIsContained() {
         // Given
-        String ghost = "BUCKET_GHOST";
         String head = "BUCKET_HEAD";
         String arms = "BUCKET_ARMS";
         String chest = "BUCKET_CHEST";
@@ -20,7 +19,6 @@ public class ArmourBucketIdentifiersTest {
 
         // When
         // Then
-        assertThat(ArmourBucketIdentifiers.contains(ghost), is(true));
         assertThat(ArmourBucketIdentifiers.contains(head), is(true));
         assertThat(ArmourBucketIdentifiers.contains(arms), is(true));
         assertThat(ArmourBucketIdentifiers.contains(chest), is(true));

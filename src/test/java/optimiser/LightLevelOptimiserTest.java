@@ -27,7 +27,7 @@ public class LightLevelOptimiserTest {
                 .withWeapons(primaryWeapons())
                 .withWeapons(specialWeapons())
                 .withWeapons(heavyWeapons())
-                .withArmour(ghosts())
+                .withWeapons(ghosts())
                 .withArmour(heads())
                 .withArmour(arms())
                 .withArmour(chests())
@@ -44,9 +44,9 @@ public class LightLevelOptimiserTest {
         assertThat(weapons.get("PRIMARY_WEAPON"), equalTo(new Item("PrimaryWeapon2", 320, ItemGrade.Legendary)));
         assertThat(weapons.get("SPECIAL_WEAPON"), equalTo(new Item("SpecialWeapon1", 318, ItemGrade.Rare)));
         assertThat(weapons.get("HEAVY_WEAPON"), equalTo(new Item("HeavyWeapon2", 322, ItemGrade.Exotic)));
+        assertThat(weapons.get("GHOST"), equalTo(new Item("Ghost2", 322, ItemGrade.Uncommon)));
 
         Map<String, Item> armour = optimised.getArmour();
-        assertThat(armour.get("GHOST"), equalTo(new Item("Ghost2", 322, ItemGrade.Uncommon)));
         assertThat(armour.get("HEAD"), equalTo(new Item("Head1", 320, ItemGrade.Rare)));
         assertThat(armour.get("ARM"), equalTo(new Item("Arm2", 322, ItemGrade.Exotic)));
         assertThat(armour.get("CHEST"), equalTo(new Item("Chest1", 310, ItemGrade.Rare)));
@@ -59,11 +59,11 @@ public class LightLevelOptimiserTest {
     public void shouldOptimiseWithNoExotics() {
         // Given
         Bucket primaryWeapons = new Bucket("PRIMARY_WEAPON", asList(new Item("PrimaryWeapon", 310, ItemGrade.Rare)));
-        Bucket ghost = new Bucket("GHOST", asList(new Item("Ghost", 320, ItemGrade.Common)));
+        Bucket head = new Bucket("HEAD", asList(new Item("Head", 320, ItemGrade.Common)));
 
         Inventory inventory = new InventoryBuilder()
                 .withWeapons(primaryWeapons)
-                .withArmour(ghost)
+                .withArmour(head)
                 .build();
 
         // When
@@ -74,7 +74,7 @@ public class LightLevelOptimiserTest {
         assertThat(weapons.get("PRIMARY_WEAPON"), equalTo(primaryWeapons.getItems().get(0)));
 
         Map<String, Item> armour = optimised.getArmour();
-        assertThat(armour.get("GHOST"), equalTo(ghost.getItems().get(0)));
+        assertThat(armour.get("HEAD"), equalTo(head.getItems().get(0)));
     }
 
     public Bucket primaryWeapons() {

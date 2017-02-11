@@ -2,7 +2,6 @@ package entities;
 
 
 public enum ArmourBucketIdentifiers {
-    BUCKET_GHOST,
     BUCKET_HEAD,
     BUCKET_ARMS,
     BUCKET_CHEST,
