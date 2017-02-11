@@ -3,9 +3,7 @@ import auth.PsnAuthenticationService;
 import cli.CommandLineInterface;
 import cli.Environment;
 import cli.RunConfiguration;
-import entities.Bucket;
-import entities.DestinyCharacter;
-import entities.Inventory;
+import entities.*;
 import loader.DestinyLoader;
 import loader.DestinyLoaderImpl;
 import optimiser.LightLevelOptimiser;
@@ -18,6 +16,7 @@ import service.DestinyService;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class App {
 
@@ -37,7 +36,7 @@ public class App {
 
         for (DestinyCharacter character : characters) {
             Inventory inventory = loader.getInventory(membershipId, character.getId());
-            HashMap<String, String> solution = optimiser.optimise(inventory);
+            OptimisedInventory solution = optimiser.optimise(inventory);
             printingService.print("Character: " + character.getCharacterClass() + " - " + character.getLevel());
             printingService.print(solution);
         }

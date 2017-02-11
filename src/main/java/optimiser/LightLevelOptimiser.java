@@ -1,11 +1,14 @@
 package optimiser;
 
 import entities.Inventory;
+import entities.Item;
+import entities.OptimisedInventory;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public interface LightLevelOptimiser {
 
-    HashMap<String, String> optimise(Inventory inventory);
+    OptimisedInventory optimise(Inventory inventory);
 
 }

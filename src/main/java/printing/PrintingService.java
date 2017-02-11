@@ -1,11 +1,11 @@
 package printing;
 
-import java.util.HashMap;
+import entities.OptimisedInventory;
 
 public interface PrintingService {
 
     void print(String output);
 
-    void print(HashMap<String, String> hashMap);
+    void print(OptimisedInventory inventory);
 
 }

@@ -1,6 +1,8 @@
 package printing;
 
-import java.util.HashMap;
+import entities.ArmourBucketIdentifiers;
+import entities.OptimisedInventory;
+import entities.WeaponBucketIdentifiers;
 
 public class ConsolePrintingService implements PrintingService {
 
@@ -10,9 +12,15 @@ public class ConsolePrintingService implements PrintingService {
     }
 
     @Override
-    public void print(HashMap<String, String> hashMap) {
-        for (String key : hashMap.keySet()) {
-            print(key + ": " + hashMap.get(key));
+    public void print(OptimisedInventory inventory) {
+        print("Weapons:");
+        for (WeaponBucketIdentifiers identifier : WeaponBucketIdentifiers.values()) {
+            print(identifier.toString() + ": " + inventory.getWeapons());
+        }
+
+        print("Armour:");
+        for (ArmourBucketIdentifiers identifier : ArmourBucketIdentifiers.values()) {
+            print(identifier.toString() + ": " + inventory.getArmour());
         }
     }
 
