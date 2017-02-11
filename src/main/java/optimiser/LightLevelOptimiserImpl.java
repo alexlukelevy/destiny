@@ -3,9 +3,9 @@ package optimiser;
 import entities.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LightLevelOptimiserImpl implements LightLevelOptimiser {
-
 
     @Override
     public OptimisedInventory optimise(Inventory inventory) {
@@ -15,98 +15,51 @@ public class LightLevelOptimiserImpl implements LightLevelOptimiser {
         return new OptimisedInventory(weapons, armour);
     }
 
-    // simply compute largest differential
-
     private Map<String, Item> optimise(List<Bucket> buckets) {
-        List<BucketHighest> bh = new ArrayList<>();
+        List<OptimisedBucket> optimised = buildOptimisedBuckets(buckets);
 
-        for (Bucket bucket : buckets) {
-            // sort the weapons by light-level
-            List<Item> sorted = new ArrayList<>(bucket.getItems());
-            sorted.sort(Comparator.comparingInt(Item::getLightLevel).reversed());
+        int maxDiff = 0;
+        OptimisedBucket exoticBucket = null;
 
-            // if exotic, also find highest non-exotic
-            Item highest = sorted.get(0);
-            Item highestNonExotic = sorted.stream()
-                    .filter(item -> item.getGrade() != ItemGrade.Exotic)
-                    .findFirst()
-                    .get();
-
-            bh.add(new BucketHighest(bucket.getName(), highest, highestNonExotic));
-        }
-
-        return optimiseH(bh);
-    }
-
-    private Map<String, Item> optimiseH(List<BucketHighest> bh) {
-
-        // highest without any exotics
-        int max_light = bh.stream().mapToInt(t -> t.getHighestNonExotic().getLightLevel()).sum();
-        String exoticBucketName = null;
-
-        for (BucketHighest h : bh) {
-            if (h.isExotic()) {
-                int max = lightLevel(h.getName(), bh);
-                if (max > max_light) {
-                    max_light = max;
-                    exoticBucketName = h.getName();
-                }
+        // select the Exotic that will give overall highest light level
+        for(OptimisedBucket bucket : optimised) {
+            int diff = bucket.exoticVsNonExoticLightLevelDiff();
+            if (diff > maxDiff) {
+                maxDiff = diff;
+                exoticBucket = bucket;
             }
         }
 
-        Map<String, Item> hottest = new HashMap<>();
+        Map<String, Item> results = new HashMap<>();
 
-        for (BucketHighest h: bh) {
-           if (h.getName().equals(exoticBucketName)) {
-               hottest.put(h.getName(), h.getHighest());
-           } else {
-               hottest.put(h.getName(), h.getHighestNonExotic());
-           }
+        for (OptimisedBucket bucket : optimised) {
+            results.put(bucket.getName(), optimalItem(bucket, exoticBucket));
         }
 
-        return hottest;
+        return  results;
     }
 
-    private int lightLevel(String exoticBucketName, List<BucketHighest> bh) {
-        int sum = 0;
-        for (BucketHighest b : bh) {
-            if (b.getName().equals(exoticBucketName)) {
-                sum += b.getHighest().getLightLevel();
-            } else {
-                sum += b.getHighestNonExotic().getLightLevel();
-            }
-        }
-        return sum;
+    private List<OptimisedBucket> buildOptimisedBuckets(List<Bucket> buckets) {
+        return buckets.stream().map(this::buildOptimisedBucket).collect(Collectors.toList());
     }
 
-    private class BucketHighest {
-        private String name;
-        private Item highest;
-        private Item highestNonExotic;
+    private OptimisedBucket buildOptimisedBucket(Bucket bucket) {
+        // sort the weapons by light-level desc
+        List<Item> sorted = new ArrayList<>(bucket.getItems());
+        sorted.sort(Comparator.comparingInt(Item::getLightLevel).reversed());
 
-        public BucketHighest(String name, Item highest, Item highestNonExotic) {
+        // find highest and highest non-exotic (could be the same item)
+        Item highest = sorted.get(0);
+        Item highestNonExotic = sorted.stream()
+                .filter(item -> item.getGrade() != ItemGrade.Exotic)
+                .findFirst()
+                .get();
 
-            this.name = name;
-            this.highest = highest;
-            this.highestNonExotic = highestNonExotic;
-        }
+        return new OptimisedBucket(bucket.getName(), highest, highestNonExotic);
+    }
 
-        public boolean isExotic() {
-            return getHighest().getGrade() == ItemGrade.Exotic;
-        }
-
-
-        public String getName() {
-            return name;
-        }
-
-        public Item getHighest() {
-            return highest;
-        }
-
-        public Item getHighestNonExotic() {
-            return highestNonExotic;
-        }
+    private Item optimalItem(OptimisedBucket bucket, OptimisedBucket exoticBucket) {
+        return exoticBucket == bucket ? bucket.getHighest() : bucket.getHighestNonExotic();
     }
 
 }
