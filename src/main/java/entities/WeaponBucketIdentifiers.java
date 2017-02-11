@@ -7,7 +7,7 @@ public enum WeaponBucketIdentifiers {
     BUCKET_HEAVY_WEAPON;
 
     public static boolean contains(String value) {
-        for(WeaponBucketIdentifiers identifier : WeaponBucketIdentifiers.values()) {
+        for (WeaponBucketIdentifiers identifier : WeaponBucketIdentifiers.values()) {
             if (identifier.toString().equals(value)) {
                 return true;
             }

@@ -22,7 +22,7 @@ public class LightLevelOptimiserImpl implements LightLevelOptimiser {
         OptimisedBucket exoticBucket = null;
 
         // select the Exotic that will give overall highest light level
-        for(OptimisedBucket bucket : optimised) {
+        for (OptimisedBucket bucket : optimised) {
             int diff = bucket.exoticVsNonExoticLightLevelDiff();
             if (diff > maxDiff) {
                 maxDiff = diff;
@@ -36,7 +36,7 @@ public class LightLevelOptimiserImpl implements LightLevelOptimiser {
             results.put(bucket.getName(), optimalItem(bucket, exoticBucket));
         }
 
-        return  results;
+        return results;
     }
 
     private List<OptimisedBucket> buildOptimisedBuckets(List<Bucket> buckets) {

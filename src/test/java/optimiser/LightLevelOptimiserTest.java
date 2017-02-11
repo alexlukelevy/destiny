@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import util.InventoryBuilder;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import static java.util.Arrays.asList;

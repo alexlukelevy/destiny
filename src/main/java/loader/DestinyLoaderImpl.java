@@ -5,7 +5,10 @@ import entities.*;
 import service.DestinyService;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DestinyLoaderImpl implements DestinyLoader {
 
@@ -29,7 +32,7 @@ public class DestinyLoaderImpl implements DestinyLoader {
 
         List<DestinyCharacter> characters = new ArrayList<>();
 
-        for(JsonNode character : charactersNode) {
+        for (JsonNode character : charactersNode) {
             JsonNode base = character.findValue("characterBase");
             long id = base.findValue("characterId").asLong();
             int classId = base.findValue("classType").asInt();

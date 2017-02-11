@@ -3,7 +3,9 @@ import auth.PsnAuthenticationService;
 import cli.CommandLineInterface;
 import cli.Environment;
 import cli.RunConfiguration;
-import entities.*;
+import entities.DestinyCharacter;
+import entities.Inventory;
+import entities.OptimisedInventory;
 import loader.DestinyLoader;
 import loader.DestinyLoaderImpl;
 import optimiser.LightLevelOptimiser;
@@ -14,9 +16,7 @@ import printing.PrintingService;
 import service.ApacheDestinyService;
 import service.DestinyService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class App {
 

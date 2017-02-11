@@ -11,7 +11,7 @@ public enum ArmourBucketIdentifiers {
     BUCKET_ARTIFACT;
 
     public static boolean contains(String value) {
-        for(ArmourBucketIdentifiers identifier : ArmourBucketIdentifiers.values()) {
+        for (ArmourBucketIdentifiers identifier : ArmourBucketIdentifiers.values()) {
             if (identifier.toString().equals(value)) {
                 return true;
             }
