@@ -96,7 +96,7 @@ public class LightLevelOptimiserTest {
         assertThat(weapons.get("PRIMARY_WEAPON"), equalTo(primaryWeapons.getItems().get(0)));
 
         Map<String, Item> armour = optimised.getArmour();
-        assertThat(armour.get("HEAD"), equalTo(Item.MISSING));
+        assertThat(armour.get("HEAD"), equalTo(Item.None));
     }
 
     public Bucket primaryWeapons() {

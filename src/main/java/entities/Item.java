@@ -3,7 +3,7 @@ package entities;
 public class Item {
 
     // represents no item
-    public static Item MISSING = new Item("Missing", 0, ItemGrade.Common);
+    public static Item None = new Item("None", 0, ItemGrade.Common);
 
     private String name;
     private int lightLevel;
