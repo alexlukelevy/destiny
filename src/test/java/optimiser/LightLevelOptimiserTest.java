@@ -77,6 +77,28 @@ public class LightLevelOptimiserTest {
         assertThat(armour.get("HEAD"), equalTo(head.getItems().get(0)));
     }
 
+    @Test
+    public void shouldOptimiseWithEmptyBucket() {
+        // Given
+        Bucket primaryWeapons = new Bucket("PRIMARY_WEAPON", asList(new Item("PrimaryWeapon", 310, ItemGrade.Rare)));
+        Bucket head = new Bucket("HEAD", asList());
+
+        Inventory inventory = new InventoryBuilder()
+                .withWeapons(primaryWeapons)
+                .withArmour(head)
+                .build();
+
+        // When
+        OptimisedInventory optimised = classUnderTest.optimise(inventory);
+
+        // Then
+        Map<String, Item> weapons = optimised.getWeapons();
+        assertThat(weapons.get("PRIMARY_WEAPON"), equalTo(primaryWeapons.getItems().get(0)));
+
+        Map<String, Item> armour = optimised.getArmour();
+        assertThat(armour.get("HEAD"), equalTo(Item.MISSING));
+    }
+
     public Bucket primaryWeapons() {
         Item item1 = new Item("PrimaryWeapon1", 310, ItemGrade.Common);
         Item item2 = new Item("PrimaryWeapon2", 320, ItemGrade.Legendary);

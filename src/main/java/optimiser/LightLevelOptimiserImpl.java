@@ -44,6 +44,12 @@ public class LightLevelOptimiserImpl implements LightLevelOptimiser {
     }
 
     private OptimisedBucket buildOptimisedBucket(Bucket bucket) {
+
+        // user might not have any items in a bucket
+        if(bucket.getItems().size() == 0) {
+            return new OptimisedBucket(bucket.getName(), Item.MISSING, Item.MISSING);
+        }
+
         // sort the weapons by light-level desc
         List<Item> sorted = new ArrayList<>(bucket.getItems());
         sorted.sort(Comparator.comparingInt(Item::getLightLevel).reversed());

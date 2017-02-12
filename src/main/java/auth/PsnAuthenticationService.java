@@ -97,7 +97,7 @@ public class PsnAuthenticationService implements AuthenticationService {
                     .stream()
                     .filter(p -> p.getName().equals("state"))
                     .findFirst()
-                    .map(NameValuePair::getName)
+                    .map(NameValuePair::getValue)
                     .get();
         } catch (URISyntaxException e) {
             throw new IOException("Problem finding 'state' query parameter");

@@ -18,3 +18,4 @@ public enum ArmourBucketIdentifiers {
         return false;
     }
 }
+// https://www.bungie.net/en/User/SignIn/Psnid?code=G5uMKo&state=5419622720031814987
