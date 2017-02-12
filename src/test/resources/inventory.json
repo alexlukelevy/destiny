@@ -1,0 +1,58 @@
+{
+  "Response": {
+    "data": {
+      "buckets": {
+        "Equippable": [
+          {
+            "bucketHash": 1,
+            "items": [
+              {
+                "itemHash": 10,
+                "primaryStat": {
+                  "value": 320
+                }
+              }
+            ]
+          },
+          {
+            "bucketHash": 2,
+            "items": [
+              {
+                "itemHash": 20,
+                "primaryStat": {
+                  "value": 310
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "definitions": {
+      "items": {
+        "10": {
+          "itemHash": 10,
+          "tierTypeName": "Exotic",
+          "itemName": "Rifle"
+        },
+        "20": {
+          "itemHash": 20,
+          "tierTypeName": "Rare",
+          "itemName": "Grasps"
+        }
+      },
+      "buckets": {
+        "1": {
+          "bucketHash": 1,
+          "bucketName": "Primary Weapons",
+          "bucketIdentifier": "BUCKET_PRIMARY_WEAPON"
+        },
+        "2": {
+          "bucketHash": 2,
+          "bucketName": "Gauntlets",
+          "bucketIdentifier": "BUCKET_ARMS"
+        }
+      }
+    }
+  }
+}

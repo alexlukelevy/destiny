@@ -1,0 +1,29 @@
+{
+  "Response": {
+    "data": {
+      "characters": [
+        {
+          "characterBase": {
+            "characterId": "123",
+            "classType": 0
+          },
+          "characterLevel": 10
+        },
+        {
+          "characterBase": {
+            "characterId": "456",
+            "classType": 1
+          },
+          "characterLevel": 20
+        },
+        {
+          "characterBase": {
+            "characterId": "789",
+            "classType": 2
+          },
+          "characterLevel": 30
+        }
+      ]
+    }
+  }
+}
