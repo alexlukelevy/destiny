@@ -11,6 +11,8 @@ public class AuthenticationContext {
     public AuthenticationContext(HttpClientContext context, String xsrf) {
         this.context = context;
         this.xsrf = xsrf;
-        this.apiKey = "57c5ff5864634503a0340ffdfbeb20c0";
+        // API key left in intentionally since they are freely granted by Bungie
+        // and it significantly reduces the barrier to entry for a user of the app
+        this.apiKey = "06aa6b97e6d041a2a4db3af84847b026";
     }
 }

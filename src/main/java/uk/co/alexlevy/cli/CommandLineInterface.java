@@ -19,7 +19,7 @@ public class CommandLineInterface {
         String psnPass = null;
 
         while (psnPass == null) {
-            psnPass = environment.readLine("Please enter your PSN password: ");
+            psnPass = environment.readPassword("Please enter your PSN password: ");
         }
 
         return new RunConfiguration(gamerTag, psnId, psnPass);

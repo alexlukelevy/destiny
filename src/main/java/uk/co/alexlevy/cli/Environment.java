@@ -2,8 +2,8 @@ package uk.co.alexlevy.cli;
 
 public class Environment {
 
-    public String readLine(String prompt) {
-        return System.console().readLine(prompt);
+    public String readPassword(String prompt) {
+        return new String(System.console().readPassword(prompt));
     }
 
 }

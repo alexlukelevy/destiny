@@ -26,7 +26,7 @@ public class CommandLineInterfaceTest {
         String psnId = "id";
         String psnPass = "pass";
 
-        given(environment.readLine("Please enter your PSN password: ")).willReturn(psnPass);
+        given(environment.readPassword("Please enter your PSN password: ")).willReturn(psnPass);
 
         // When
         RunConfiguration config = classUnderTest.parse(new String[]{gamerTag, psnId});
