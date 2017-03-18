@@ -2,9 +2,18 @@
 
 Created as an experimental app to get familiar with the Destiny public REST API, this CLI highlights the items to equip in order to optimise your light level.
 
+### Build
 ```sh
-$ lightload LethalLevy --psn-id <PSN-ID>  --psn-pass <PSN-PASS>
+mvn clean install package
 ```
 
-### Authentication
-By default, Light Loader will prompt you for your PSN ID and password every time you run the tool. If you don't want to type out your credentials every time then you can set the `PSN_ID` and `PSN_PASS` environment variables.
+### Run
+
+```sh
+./destiny-light-loader.sh <PSN-GAMERTAG> <PSN-ID>
+```
+
+* `<PSN-GAMERTAG>` is your PSN display name e.g. MadSnipez2k17
+* `<PSN-ID>` is your PSN associated email account e.g. mad.snipez@email.com
+
+You will also be prompted for your PSN password. This is not stored but is required to make authenticated requests to the Bungie API.
